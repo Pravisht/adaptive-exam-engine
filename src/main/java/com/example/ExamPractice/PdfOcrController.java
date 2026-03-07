@@ -45,7 +45,7 @@ public class PdfOcrController {
                 pageTexts.add(text);
             }
         }
-
+        // to do: to store and give the response as page wise or DTO wise
         return ResponseEntity.ok(pageTexts);
     }
 }
