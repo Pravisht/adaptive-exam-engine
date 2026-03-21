@@ -67,13 +67,27 @@ public class PdfQuestionImportController {
         for (int start = 0; start < cleanedPages.size(); start += chunkPages) {
             int endExclusive = Math.min(start + chunkPages, cleanedPages.size());
             StringBuilder chunkText = new StringBuilder();
+            int chunkStartPage = start + 1;
 
             for (int i = start; i < endExclusive; i++) {
                 chunkText.append("\n\n=== Page ").append(i + 1).append(" ===\n");
                 chunkText.append(cleanedPages.get(i));
             }
 
-            merged.addAll(extractionClient.extractQuestions(chunkText.toString(), sourcePdfName, -1));
+            List<QuestionDto> chunkQuestions = extractionClient.extractQuestions(chunkText.toString(), sourcePdfName, chunkStartPage);
+            String fallbackChunkSubject = inferSubjectFromChunk(chunkText.toString());
+            for (QuestionDto question : chunkQuestions) {
+                if (question.getPageNumber() == null || question.getPageNumber() <= 0) {
+                    question.setPageNumber(chunkStartPage);
+                }
+                if (question.getSourcePdfName() == null || question.getSourcePdfName().isBlank()) {
+                    question.setSourcePdfName(sourcePdfName);
+                }
+                if (question.getSubject() == null || question.getSubject().isBlank()) {
+                    question.setSubject(inferSubjectFromQuestion(question.getText(), fallbackChunkSubject));
+                }
+            }
+            merged.addAll(chunkQuestions);
         }
 
         return ResponseEntity.ok(deduplicate(merged));
@@ -100,6 +114,64 @@ public class PdfQuestionImportController {
                 .reduce((left, right) -> left + "|" + right)
                 .orElse("");
         return normalizedText + "::" + normalizedOptions;
+    }
+
+    private String inferSubjectFromChunk(String chunkText) {
+        String lower = chunkText == null ? "" : chunkText.toLowerCase(Locale.ROOT);
+        if (lower.contains("maths and reasoning") || lower.contains("quantitative aptitude")) {
+            return "Maths";
+        }
+        if (lower.contains("general knowledge") || lower.contains("general awareness") || lower.contains("current affairs")) {
+            return "GK";
+        }
+        if (lower.contains("english language") || lower.contains("comprehension") || lower.contains("grammar")) {
+            return "English";
+        }
+        if (lower.contains("aptitude")) {
+            return "Aptitude";
+        }
+        return null;
+    }
+
+    private String inferSubjectFromQuestion(String questionText, String fallbackChunkSubject) {
+        if (questionText == null) {
+            return fallbackChunkSubject;
+        }
+        String lower = questionText.toLowerCase(Locale.ROOT);
+
+        // Maths signals
+        if (lower.matches(".*[=+\\-*/%^].*")
+                || lower.contains("triangle")
+                || lower.contains("probability")
+                || lower.contains("average")
+                || lower.contains("interest")
+                || lower.contains("ratio")
+                || lower.contains("volume")
+                || lower.contains("equation")) {
+            return "Maths";
+        }
+
+        // English signals
+        if (lower.contains("synonym")
+                || lower.contains("antonym")
+                || lower.contains("passage")
+                || lower.contains("grammar")
+                || lower.contains("meaning")
+                || lower.contains("vocabulary")) {
+            return "English";
+        }
+
+        // GK signals
+        if (lower.contains("india")
+                || lower.contains("constitution")
+                || lower.contains("minister")
+                || lower.contains("project")
+                || lower.contains("history")
+                || lower.contains("which year")) {
+            return "GK";
+        }
+
+        return fallbackChunkSubject;
     }
 }
 

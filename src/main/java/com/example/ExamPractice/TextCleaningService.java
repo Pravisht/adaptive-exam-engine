@@ -22,6 +22,10 @@ public class TextCleaningService {
         cleaned = cleaned.replaceAll("(?i)Prepp Download Prepp APP.*", "");
         cleaned = cleaned.replaceAll("(?i)GET ITON.*", "");
         cleaned = cleaned.replaceAll("(?i)Google Play.*", "");
+        cleaned = cleaned.replaceAll("(?i)Your Personal Exams Guide.*", "");
+
+        // Remove common scoring artifacts from OCR like "(+3, -1)" or "( +3,-1 )"
+        cleaned = cleaned.replaceAll("\\(\\s*[+\\-]?\\d+\\s*,\\s*[+\\-]?\\d+\\s*\\)", "");
 
         // Normalize multiple newlines and spaces
         cleaned = cleaned.replaceAll("[ \\t]+", " ");

@@ -78,7 +78,8 @@ JSON schema (return a JSON array of objects):
     "options": [string,string,string,string], // 4 options, ordered a,b,c,d
     "correctOptionIndex": integer|null, // 0 for a, 1 for b, 2 for c, 3 for d, null if missing
     "subject": string|null,        // one of: Maths, GK, English, Aptitude (or null if not identifiable)
-    "difficulty": "EASY"|"MEDIUM"|"HARD"|null // infer if possible, else null
+    "difficulty": "EASY"|"MEDIUM"|"HARD"|null, // infer if possible, else null
+    "pageNumber": integer|null
   }
 ]
 
@@ -86,9 +87,13 @@ Rules:
 1) Options must be exactly 4 and ordered as [a,b,c,d].
 2) If the answer key at the end contains something like "(1. answer d)" or "1. answer d",
    map that to correctOptionIndex. If no answer for that question number is found, set correctOptionIndex=null.
-3) `subject` MUST be exactly one of: Maths, GK, English, Aptitude. If not identifiable, set it to null.
+3) `subject` MUST be exactly one of: Maths, GK, English, Aptitude.
+   Try hard to classify using local context (section headers, nearby questions, vocabulary).
+   Use null only when classification is genuinely impossible.
 4) If difficulty cannot be inferred confidently, set difficulty to null.
-4) Do NOT include option text inside "text".
+5) Do NOT include option text inside "text".
+6) Remove scoring artifacts/noise from text and options, e.g. "(+3, -1)", "(+2,-0.5)", app banners.
+7) Use the nearest "=== Page N ===" marker to fill pageNumber where possible. If uncertain, set pageNumber to null.
 
 Here is the OCR text (may include the question set and an answer key at the end):
 %s
