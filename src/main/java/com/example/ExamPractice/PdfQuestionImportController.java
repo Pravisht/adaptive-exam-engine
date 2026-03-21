@@ -78,12 +78,15 @@ public class PdfQuestionImportController {
             String fallbackChunkSubject = inferSubjectFromChunk(chunkText.toString());
             for (QuestionDto question : chunkQuestions) {
                 if (question.getPageNumber() == null || question.getPageNumber() <= 0) {
+                    System.out.println("page num fallback");
                     question.setPageNumber(chunkStartPage);
                 }
                 if (question.getSourcePdfName() == null || question.getSourcePdfName().isBlank()) {
+                    System.out.println("pdf name fallback");
                     question.setSourcePdfName(sourcePdfName);
                 }
                 if (question.getSubject() == null || question.getSubject().isBlank()) {
+                    System.out.println("subject fallback"+" "+question.toString());
                     question.setSubject(inferSubjectFromQuestion(question.getText(), fallbackChunkSubject));
                 }
             }
@@ -97,6 +100,9 @@ public class PdfQuestionImportController {
         Map<String, QuestionDto> unique = new LinkedHashMap<>();
         for (QuestionDto question : questions) {
             if (question == null || question.getText() == null || question.getText().isBlank()) {
+                continue;
+            }
+            if (isLowQualityQuestion(question)) {
                 continue;
             }
             String key = buildDedupKey(question);
@@ -114,6 +120,26 @@ public class PdfQuestionImportController {
                 .reduce((left, right) -> left + "|" + right)
                 .orElse("");
         return normalizedText + "::" + normalizedOptions;
+    }
+
+    private boolean isLowQualityQuestion(QuestionDto question) {
+        String text = question.getText().trim();
+        String lower = text.toLowerCase(Locale.ROOT);
+        if (lower.startsWith("=== page")) {
+            return true;
+        }
+        // Reject ultra-short fragments that are usually OCR split leftovers.
+        if (text.length() < 12) {
+            return true;
+        }
+        // At least two options should be reasonably long to qualify as a stable MCQ parse.
+        if (question.getOptions() != null) {
+            long meaningfulOptions = question.getOptions().stream()
+                    .filter(o -> o != null && o.trim().length() >= 3)
+                    .count();
+            return meaningfulOptions < 2;
+        }
+        return false;
     }
 
     private String inferSubjectFromChunk(String chunkText) {

@@ -24,7 +24,9 @@ public class TesseractOcrServiceImpl implements TesseractOcrService {
     public TesseractOcrServiceImpl(
             @Value("${ocr.tessdata.path}") String tessdataPath,
             @Value("${ocr.library.path:/opt/homebrew/lib}") String libraryPath,
-            @Value("${ocr.language:eng}") String language) {
+            @Value("${ocr.language:eng+equ}") String language,
+            @Value("${ocr.psm:6}") int psm,
+            @Value("${ocr.oem:1}") int oem) {
 
         // Configure JNA to find the Tesseract native library
         try {
@@ -42,6 +44,9 @@ public class TesseractOcrServiceImpl implements TesseractOcrService {
         this.tesseract = new Tesseract();
         this.tesseract.setDatapath(tessdataPath);
         this.tesseract.setLanguage(language);
+        this.tesseract.setPageSegMode(psm);
+        this.tesseract.setOcrEngineMode(oem);
+        this.tesseract.setTessVariable("preserve_interword_spaces", "1");
     }
 
     @Override

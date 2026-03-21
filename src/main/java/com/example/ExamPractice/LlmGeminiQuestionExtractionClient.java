@@ -40,8 +40,8 @@ public class LlmGeminiQuestionExtractionClient implements QuestionExtractionClie
     @Value("${llm.temperature:0.2}")
     private double temperature;
 
-    public LlmGeminiQuestionExtractionClient(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
+    public LlmGeminiQuestionExtractionClient() {
+        this.objectMapper = new ObjectMapper();
         this.restClient = RestClient.create();
     }
 
@@ -94,6 +94,8 @@ Rules:
 5) Do NOT include option text inside "text".
 6) Remove scoring artifacts/noise from text and options, e.g. "(+3, -1)", "(+2,-0.5)", app banners.
 7) Use the nearest "=== Page N ===" marker to fill pageNumber where possible. If uncertain, set pageNumber to null.
+8) OCR may split one question across multiple lines. Reconstruct the full question statement by joining continuation lines
+   until option lines (a/b/c/d) start. Do not return partial fragments.
 
 Here is the OCR text (may include the question set and an answer key at the end):
 %s
