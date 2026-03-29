@@ -1,0 +1,13 @@
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/DifficultyLevel.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/ExamPracticeApplication.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/LlmGeminiQuestionExtractionClient.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/PdfOcrController.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/PdfQuestionImportController.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/PdfToImages.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/QuestionDto.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/QuestionExtractionClient.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/SimpleRegexQuestionExtractionClient.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/TesseractLibraryConfig.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/TesseractOcrService.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/TesseractOcrServiceImpl.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/ExamPractice/TextCleaningService.java
