@@ -1,4 +1,4 @@
-package com.example.ExamPractice;
+package com.example.examengine.ingestion.service;
 
 import java.awt.image.BufferedImage;
 
@@ -16,5 +16,3 @@ public interface TesseractOcrService {
      */
     String extractText(BufferedImage image, int pageNumber);
 }
-
-

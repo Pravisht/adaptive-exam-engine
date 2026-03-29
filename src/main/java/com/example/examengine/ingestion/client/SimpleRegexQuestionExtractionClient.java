@@ -1,5 +1,6 @@
-package com.example.ExamPractice;
+package com.example.examengine.ingestion.client;
 
+import com.example.examengine.question.QuestionDto;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 
@@ -69,4 +70,3 @@ public class SimpleRegexQuestionExtractionClient implements QuestionExtractionCl
         return result;
     }
 }
-

@@ -1,4 +1,4 @@
-package com.example.ExamPractice;
+package com.example.examengine.config;
 
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -22,12 +22,11 @@ public class TesseractLibraryConfig {
     @PostConstruct
     public void configureLibraryPath() {
         String currentLibraryPath = System.getProperty("java.library.path", "");
-        String newLibraryPath = currentLibraryPath.isEmpty() 
-            ? libraryPath 
+        String newLibraryPath = currentLibraryPath.isEmpty()
+            ? libraryPath
             : currentLibraryPath + File.pathSeparator + libraryPath;
-        
+
         System.setProperty("java.library.path", newLibraryPath);
         log.info("Configured java.library.path to include: {}", libraryPath);
     }
 }
-

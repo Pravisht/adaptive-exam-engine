@@ -1,5 +1,6 @@
-package com.example.ExamPractice;
+package com.example.examengine.ingestion.client;
 
+import com.example.examengine.question.QuestionDto;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -207,4 +208,3 @@ Here is the OCR text (may include the question set and an answer key at the end)
         return stripped.trim();
     }
 }
-

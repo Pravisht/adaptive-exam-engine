@@ -1,4 +1,4 @@
-package com.example.ExamPractice;
+package com.example.examengine.ingestion.service;
 
 import org.springframework.stereotype.Service;
 
@@ -87,4 +87,3 @@ public class TextCleaningService {
         current.setLength(0);
     }
 }
-

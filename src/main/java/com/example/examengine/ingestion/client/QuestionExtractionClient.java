@@ -1,4 +1,6 @@
-package com.example.ExamPractice;
+package com.example.examengine.ingestion.client;
+
+import com.example.examengine.question.QuestionDto;
 
 import java.util.List;
 
@@ -18,4 +20,3 @@ public interface QuestionExtractionClient {
      */
     List<QuestionDto> extractQuestions(String cleanedText, String sourcePdfName, int pageNumber);
 }
-

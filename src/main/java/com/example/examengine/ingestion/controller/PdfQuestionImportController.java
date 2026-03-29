@@ -1,5 +1,10 @@
-package com.example.ExamPractice;
+package com.example.examengine.ingestion.controller;
 
+import com.example.examengine.ingestion.client.QuestionExtractionClient;
+import com.example.examengine.ingestion.service.PdfToImages;
+import com.example.examengine.ingestion.service.TesseractOcrService;
+import com.example.examengine.ingestion.service.TextCleaningService;
+import com.example.examengine.question.QuestionDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -200,4 +205,3 @@ public class PdfQuestionImportController {
         return fallbackChunkSubject;
     }
 }
-

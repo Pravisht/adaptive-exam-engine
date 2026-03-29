@@ -1,4 +1,4 @@
-package com.example.ExamPractice;
+package com.example.examengine.question;
 
 import lombok.Data;
 
@@ -50,5 +50,3 @@ public class QuestionDto {
      */
     private Integer pageNumber;
 }
-
-

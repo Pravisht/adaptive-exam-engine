@@ -1,5 +1,7 @@
-package com.example.ExamPractice;
+package com.example.examengine.ingestion.controller;
 
+import com.example.examengine.ingestion.service.PdfToImages;
+import com.example.examengine.ingestion.service.TesseractOcrService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -49,5 +51,3 @@ public class PdfOcrController {
         return ResponseEntity.ok(pageTexts);
     }
 }
-
-

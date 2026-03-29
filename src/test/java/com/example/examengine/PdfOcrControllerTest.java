@@ -1,4 +1,4 @@
-package com.example.ExamPractice;
+package com.example.examengine;
 
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package com.example.ExamPractice;
+package com.example.examengine.question;
 
 /**
  * Difficulty of a question.
@@ -8,5 +8,3 @@ public enum DifficultyLevel {
     MEDIUM,
     HARD
 }
-
-

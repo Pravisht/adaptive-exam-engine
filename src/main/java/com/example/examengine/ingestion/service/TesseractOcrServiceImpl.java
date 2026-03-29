@@ -1,4 +1,4 @@
-package com.example.ExamPractice;
+package com.example.examengine.ingestion.service;
 
 import com.sun.jna.NativeLibrary;
 import net.sourceforge.tess4j.Tesseract;
@@ -59,5 +59,3 @@ public class TesseractOcrServiceImpl implements TesseractOcrService {
         }
     }
 }
-
-
