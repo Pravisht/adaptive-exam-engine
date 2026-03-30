@@ -1,6 +1,7 @@
 package com.example.examengine.ingestion.service;
 
 import com.sun.jna.NativeLibrary;
+import jakarta.annotation.PostConstruct;
 import net.sourceforge.tess4j.Tesseract;
 import net.sourceforge.tess4j.TesseractException;
 import org.slf4j.Logger;
@@ -19,6 +20,8 @@ public class TesseractOcrServiceImpl implements TesseractOcrService {
 
     private static final Logger log = LoggerFactory.getLogger(TesseractOcrServiceImpl.class);
 
+    private final String tessdataPath;
+    private final String language;
     private final Tesseract tesseract;
 
     public TesseractOcrServiceImpl(
@@ -26,7 +29,10 @@ public class TesseractOcrServiceImpl implements TesseractOcrService {
             @Value("${ocr.library.path:/opt/homebrew/lib}") String libraryPath,
             @Value("${ocr.language:eng+equ}") String language,
             @Value("${ocr.psm:6}") int psm,
-            @Value("${ocr.oem:1}") int oem) {
+            @Value("${ocr.oem:3}") int oem) {
+
+        this.tessdataPath = tessdataPath;
+        this.language = language;
 
         // Configure JNA to find the Tesseract native library
         try {
@@ -47,6 +53,22 @@ public class TesseractOcrServiceImpl implements TesseractOcrService {
         this.tesseract.setPageSegMode(psm);
         this.tesseract.setOcrEngineMode(oem);
         this.tesseract.setTessVariable("preserve_interword_spaces", "1");
+    }
+
+    @PostConstruct
+    void verifyEquTraineddataIfNeeded() {
+        if (language == null || !language.contains("equ")) {
+            return;
+        }
+        File equFile = new File(tessdataPath, "equ.traineddata");
+        if (equFile.isFile()) {
+            log.info("equ.traineddata found at {}", equFile.getAbsolutePath());
+            return;
+        }
+        log.error(
+                "ocr.language is '{}' but equ.traineddata is missing at {}. "
+                        + "Download: curl -fsSL -o '{}' https://github.com/tesseract-ocr/tessdata/raw/main/equ.traineddata",
+                language, equFile.getAbsolutePath(), equFile.getAbsolutePath());
     }
 
     @Override

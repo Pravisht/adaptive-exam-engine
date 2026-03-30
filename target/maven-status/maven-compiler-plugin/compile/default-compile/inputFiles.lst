@@ -2,8 +2,10 @@
 /Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/attempt/AttemptLog.java
 /Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/attempt/AttemptRepository.java
 /Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/config/TesseractLibraryConfig.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/ingestion/client/GeminiLlmEnabledCondition.java
 /Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/ingestion/client/LlmGeminiQuestionExtractionClient.java
 /Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/ingestion/client/QuestionExtractionClient.java
+/Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/ingestion/client/RegexLlmEnabledCondition.java
 /Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/ingestion/client/SimpleRegexQuestionExtractionClient.java
 /Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/ingestion/controller/PdfOcrController.java
 /Users/pravishtgoel/projects/ExamPractice/src/main/java/com/example/examengine/ingestion/controller/PdfQuestionImportController.java

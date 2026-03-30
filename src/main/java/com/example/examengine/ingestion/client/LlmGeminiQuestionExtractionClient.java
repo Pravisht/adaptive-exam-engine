@@ -7,7 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -19,7 +19,7 @@ import java.util.List;
  * Gemini-backed extraction. It asks Gemini to return strict JSON matching {@link QuestionDto}.
  */
 @Service
-@ConditionalOnProperty(name = "llm.provider", havingValue = "gemini")
+@Conditional(GeminiLlmEnabledCondition.class)
 public class LlmGeminiQuestionExtractionClient implements QuestionExtractionClient {
 
     private static final Logger log = LoggerFactory.getLogger(LlmGeminiQuestionExtractionClient.class);
@@ -48,11 +48,6 @@ public class LlmGeminiQuestionExtractionClient implements QuestionExtractionClie
 
     @Override
     public List<QuestionDto> extractQuestions(String cleanedText, String sourcePdfName, int pageNumber) {
-        if (apiKey == null || apiKey.isBlank()) {
-            throw new IllegalStateException(
-                    "Gemini API key is missing. Set GEMINI_API_KEY env var or gemini.api.key in application.properties.");
-        }
-
         String documentText = cleanedText == null ? "" : cleanedText.trim();
         if (documentText.isBlank()) {
             return List.of();
@@ -97,6 +92,10 @@ Rules:
 7) Use the nearest "=== Page N ===" marker to fill pageNumber where possible. If uncertain, set pageNumber to null.
 8) OCR may split one question across multiple lines. Reconstruct the full question statement by joining continuation lines
    until option lines (a/b/c/d) start. Do not return partial fragments.
+9) Never copy app marketing/footer text into any field: remove "Prepp", "Download Prepp APP", "GET IT ON", "Google Play",
+   "Rect ON", bar characters, or similar — even if they appear inside an option line.
+10) If an option line is glued to the start of the next question (e.g. stray "11." or "ll." followed by new question text),
+    trim the option to end before that leak. Each option must be short (typically one line).
 
 Here is the OCR text (may include the question set and an answer key at the end):
 %s
@@ -130,7 +129,7 @@ Here is the OCR text (may include the question set and an answer key at the end)
         if (responseBody == null || responseBody.isBlank()) {
             return List.of();
         }
-
+        System.out.println("IN GEMINI **"+" "+responseBody);
         return parseGeminiQuestions(responseBody);
     }
 

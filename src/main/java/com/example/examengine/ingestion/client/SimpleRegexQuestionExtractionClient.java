@@ -1,7 +1,7 @@
 package com.example.examengine.ingestion.client;
 
 import com.example.examengine.question.QuestionDto;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * This is a placeholder until an LLM-backed implementation is wired in.
  */
 @Service
-@ConditionalOnProperty(name = "llm.provider", havingValue = "regex", matchIfMissing = true)
+@Conditional(RegexLlmEnabledCondition.class)
 public class SimpleRegexQuestionExtractionClient implements QuestionExtractionClient {
 
     // Matches start of a question line like "1. " or "23. "

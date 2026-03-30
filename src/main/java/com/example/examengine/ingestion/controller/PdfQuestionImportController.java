@@ -82,16 +82,14 @@ public class PdfQuestionImportController {
             List<QuestionDto> chunkQuestions = extractionClient.extractQuestions(chunkText.toString(), sourcePdfName, chunkStartPage);
             String fallbackChunkSubject = inferSubjectFromChunk(chunkText.toString());
             for (QuestionDto question : chunkQuestions) {
+                cleaningService.sanitizeQuestionDto(question);
                 if (question.getPageNumber() == null || question.getPageNumber() <= 0) {
-                    System.out.println("page num fallback");
                     question.setPageNumber(chunkStartPage);
                 }
                 if (question.getSourcePdfName() == null || question.getSourcePdfName().isBlank()) {
-                    System.out.println("pdf name fallback");
                     question.setSourcePdfName(sourcePdfName);
                 }
                 if (question.getSubject() == null || question.getSubject().isBlank()) {
-                    System.out.println("subject fallback"+" "+question.toString());
                     question.setSubject(inferSubjectFromQuestion(question.getText(), fallbackChunkSubject));
                 }
             }
@@ -133,12 +131,27 @@ public class PdfQuestionImportController {
         if (lower.startsWith("=== page")) {
             return true;
         }
+        if (lower.contains("prepp download") || lower.contains("get it on")) {
+            return true;
+        }
         // Reject ultra-short fragments that are usually OCR split leftovers.
         if (text.length() < 12) {
             return true;
         }
         // At least two options should be reasonably long to qualify as a stable MCQ parse.
         if (question.getOptions() != null) {
+            for (String o : question.getOptions()) {
+                if (o == null) {
+                    continue;
+                }
+                String ol = o.toLowerCase(Locale.ROOT);
+                if (ol.contains("prepp download") || ol.contains("get it on")) {
+                    return true;
+                }
+                if (o.length() > 420) {
+                    return true;
+                }
+            }
             long meaningfulOptions = question.getOptions().stream()
                     .filter(o -> o != null && o.trim().length() >= 3)
                     .count();
@@ -170,22 +183,53 @@ public class PdfQuestionImportController {
         }
         String lower = questionText.toLowerCase(Locale.ROOT);
 
+        // English (exam phrasing — check before maths to avoid mislabelling grammar items)
+        if (lower.contains("select the most appropriate")
+                || lower.contains("select the correct spelling")
+                || lower.contains("select the option")
+                || lower.contains("homophone")
+                || lower.contains("synonym")
+                || lower.contains("antonym")
+                || lower.contains("idiom")
+                || lower.contains("passive voice")
+                || lower.contains("direct speech")
+                || lower.contains("reported speech")
+                || lower.contains("one-word substitute")
+                || lower.contains("incorrectly spelt")
+                || lower.contains("jumbled")
+                || lower.contains("fill in the blank")
+                || lower.contains("underlined word")
+                || lower.contains("spelling of")) {
+            return "English";
+        }
+
+        // Reasoning / puzzles (often mis-tagged as Maths)
+        if (lower.contains("blood relation")
+                || lower.contains("sitting around")
+                || lower.contains("circular table")
+                || lower.contains("coding")
+                || lower.contains("syllogism")
+                || lower.contains("statement") && lower.contains("conclusion")) {
+            return "Aptitude";
+        }
+
         // Maths signals
-        if (lower.matches(".*[=+\\-*/%^].*")
+        if (lower.matches(".*[=+\\-*/%^√].*")
                 || lower.contains("triangle")
                 || lower.contains("probability")
                 || lower.contains("average")
                 || lower.contains("interest")
                 || lower.contains("ratio")
                 || lower.contains("volume")
-                || lower.contains("equation")) {
+                || lower.contains("equation")
+                || lower.contains("tan(")
+                || lower.contains("sin ")
+                || lower.contains("cos ")) {
             return "Maths";
         }
 
-        // English signals
-        if (lower.contains("synonym")
-                || lower.contains("antonym")
-                || lower.contains("passage")
+        // English (lighter keywords)
+        if (lower.contains("passage")
                 || lower.contains("grammar")
                 || lower.contains("meaning")
                 || lower.contains("vocabulary")) {
@@ -193,8 +237,13 @@ public class PdfQuestionImportController {
         }
 
         // GK signals
-        if (lower.contains("india")
+        if (lower.contains("ministry")
                 || lower.contains("constitution")
+                || lower.contains("which portal")
+                || lower.contains("which of the following") && (lower.contains("dynasty") || lower.contains("minister"))) {
+            return "GK";
+        }
+        if (lower.contains("india")
                 || lower.contains("minister")
                 || lower.contains("project")
                 || lower.contains("history")
